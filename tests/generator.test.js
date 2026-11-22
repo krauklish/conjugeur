@@ -59,6 +59,8 @@ test('agreement variants flow through', () => {
 test('complement aux override', () => {
   assert.deepEqual(b('passer', 'ind.pc', 'pc-hier', 'marie', 0).answers, ['est passée']);
   assert.deepEqual(b('passer', 'ind.pc', 'pc-hier', 'marie', 1).answers, ['a passé']);
+  assert.equal(b('passer', 'ind.pc', 'pc-hier', 'marie', 0).aux, 'être');
+  assert.equal(b('passer', 'ind.pc', 'pc-hier', 'marie', 1).aux, null);
 });
 
 test('notPersons, notVerbs, notForms, impersonal', () => {

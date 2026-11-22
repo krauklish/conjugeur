@@ -122,6 +122,7 @@ export function createGenerator({ verbs, subjects, frames, complements, random =
       cue: frame.cue,
       formId,
       person: subject.person,
+      aux: complement.aux ?? null,
       ref: { verb: inf, frameId, subjectId, complementIndex },
     };
   }

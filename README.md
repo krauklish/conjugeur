@@ -8,6 +8,7 @@ The user sees a sentence with a blank, works out which verb form the context req
 No build step and no runtime dependencies. Node is used only for tests and data checks.
 
 ```bash
+npm start                              # serve the app at http://localhost:5173
 npm test
 npm run validate
 npm run sentences -- --verb aller      # print generated sentences for proofreading
@@ -20,7 +21,14 @@ npm run sentences -- --count           # totals per verb × form
 js/data/     forms.js (form registry), verbs.js (conjugation tables),
              subjects.js, frames.js, complements.js (sentence content)
 js/core/     conjugator.js, french.js (elision, agreement, normalisation),
-             generator.js (frame + subject + verb form + complement → exercise)
+             generator.js (frame + subject + verb form + complement → exercise),
+             checker.js (typed answer → verdict and diagnosis),
+             scheduler.js (weighted choice of the next verb × form, statistics),
+             store.js (localStorage: selection and statistics)
+js/ui/       practice.js, settings.js, progress.js, strings.js (all French UI text), dom.js
+js/main.js   bootstrap, view registry, navigation
+index.html, css/app.css
+prototype/   index.html: single-file design prototype with mocked data (not the app)
 tests/       node:test suites
 tools/       validate-data.mjs, validate-sentences.mjs, dump-sentences.mjs
 ```
@@ -42,8 +50,8 @@ negation. After adding a verb or frame, run `npm run validate` and read `npm run
 - [x] 1. Core: forms registry, conjugator, French helpers, tests
 - [x] 2. Verb data: 20 verbs, validator, cross-check (blind re-derivation + fr.wiktionary, 2026-11-22: no differences)
 - [x] 3. Sentence layer: subjects, frames, complements, generator (one full review of every sentence, then fixes; the revised set was only partly re-read, so owner proofreading is still welcome)
-- [ ] 4. Practice screen
-- [ ] 5. Settings, progress, scheduler
+- [x] 4. Practice screen (app shell, answer checker with diagnosis; tested in a desktop browser at phone width, not yet on a phone)
+- [x] 5. Settings, progress, scheduler (tested in a desktop browser at phone width, not yet on a phone)
 - [ ] 6. Offline: service worker, manifest
 - [ ] 7. Device testing and deployment
 
@@ -71,5 +79,15 @@ negation. After adding a verb or frame, run `npm run validate` and read `npm run
 | 2026-11-22 | Futur frames avoid markers where the présent is as natural (« l'année prochaine », « plus tard ») | The learner must not be marked wrong for a correct alternative |
 | 2026-11-22 | Subjonctif passé frames always carry a past marker after the complement; subjonctif présent frames with a non-volitional trigger carry a present or future marker | Keeps the two subjunctive forms from being interchangeable |
 | 2026-11-22 | Invariant: every verb × form keeps at least 3 usable frames and 3 usable complements (validator warns below 3 frames) | Enough variety without forcing unnatural sentences |
+| 2026-11-22 | Visual design: black on white, one accent colour (#1440ff), system sans, three type styles, no icons, images or shadows | Owner's brief; see `prototype/index.html` |
+| 2026-11-22 | No on-screen accent keys | Owner's decision; the phone keyboard is enough |
+| 2026-11-22 | One persistent input that never loses focus; Enter checks, Enter again continues | Keeps the phone keyboard open and the flow keyboard-only |
+| 2026-11-22 | Checker diagnoses wrong answers (other form, other person, agreement, auxiliary); an exact match of another form wins over an accent-only slip | More useful feedback than a bare "wrong" |
+| 2026-11-22 | Views are registered in `main.js` (`{ id, label, mount }`) and share a `ctx` (selection, score) | Settings and progress screens plug in without touching the practice view |
+| 2026-11-22 | Progress is tracked per verb × form (`seen`, `right`, `streak`), not per person or per sentence | Small, readable statistics; enough to steer practice |
+| 2026-11-22 | Next pair is a weighted random choice: weight = 1 + 4 × (1 − smoothed accuracy), halved after 3 correct in a row; never the same pair twice running | Weak and unseen pairs come up more often, mastered ones still return |
+| 2026-11-22 | An accent-only slip counts as not right in statistics and score | Consistent with "accents matter" |
+| 2026-11-22 | Storage keeps what is switched OFF, under one key `conjugeur.v1` | Verbs and forms added later are on by default |
+| 2026-11-22 | Storage never throws; falls back to memory when unavailable | Private mode and blocked storage must not break practice |
 | 2026-11-22 | UI language is French | Owner's choice |
 | 2026-11-22 | Hosting: GitHub Pages | Static HTTPS is all a service worker needs |
