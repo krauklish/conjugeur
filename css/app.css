@@ -32,6 +32,14 @@ nav button { padding: 4px 0; border-bottom: 2px solid transparent; transition: b
 nav button[aria-current="page"] { border-bottom-color: var(--accent); color: var(--accent); }
 nav .score { margin-left: auto; font-variant-numeric: tabular-nums; }
 
+/* Update notice: one caption line under the nav rule, unfolds like .feedback */
+.update { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .3s var(--ease), opacity .3s var(--ease); }
+.update > div { overflow: hidden; }
+.update.is-open { grid-template-rows: 1fr; opacity: 1; }
+.update p { display: flex; gap: 16px; align-items: baseline; padding-top: 12px; }
+.update .link { margin-left: auto; }
+.update .link:disabled { cursor: default; }
+
 /* Views: cross-fade */
 .view { padding-top: 36px; transition: opacity .2s var(--ease), transform .2s var(--ease); }
 .view.is-leaving, .view.is-entering { opacity: 0; transform: translateY(6px); }

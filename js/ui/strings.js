@@ -34,6 +34,10 @@ export const S = {
     clear: 'Effacer la progression',
     confirmClear: `Effacer toute la progression${NB}?`,
   },
+  update: {
+    text: 'Nouvelle version disponible',
+    action: 'Mettre à jour',
+  },
   verdicts: {
     correct: 'Correct',
     accent: `Presque${NB}: attention aux accents`,

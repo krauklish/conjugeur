@@ -13,6 +13,7 @@ import { S, score } from './ui/strings.js';
 import { mountPractice } from './ui/practice.js';
 import { mountSettings } from './ui/settings.js';
 import { mountProgress } from './ui/progress.js';
+import { registerServiceWorker } from './sw-register.js';
 
 const FADE_MS = 200;
 
@@ -98,6 +99,7 @@ function start(root) {
   }
 
   go(VIEWS[0].id);
+  registerServiceWorker(nav);
 }
 
 start(document.getElementById('app'));
