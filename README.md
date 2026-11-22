@@ -10,22 +10,38 @@ No build step and no runtime dependencies. Node is used only for tests and data 
 ```bash
 npm test
 npm run validate
+npm run sentences -- --verb aller      # print generated sentences for proofreading
+npm run sentences -- --count           # totals per verb × form
 ```
 
 ## Layout
 
 ```
-js/data/     forms.js (form registry), verbs.js (conjugation tables)
-js/core/     conjugator.js, french.js (elision, agreement, normalisation)
+js/data/     forms.js (form registry), verbs.js (conjugation tables),
+             subjects.js, frames.js, complements.js (sentence content)
+js/core/     conjugator.js, french.js (elision, agreement, normalisation),
+             generator.js (frame + subject + verb form + complement → exercise)
 tests/       node:test suites
-tools/       validate-data.mjs
+tools/       validate-data.mjs, validate-sentences.mjs, dump-sentences.mjs
 ```
+
+## Sentence content
+
+A sentence is `frame + subject + verb form + complement`, combined mechanically, so each piece
+must be safe to combine. Combinations that don't work are switched off with:
+
+- frame: `notVerbs`, `notPersons`, `notSubjects`
+- complement: `notForms`, `notFrames`, and `aux` (auxiliary override, used by `passer`)
+
+Rules for new content: B1 vocabulary; a frame must force its form (no other of the trained forms
+equally correct); complements carry no time expression, nothing that depends on the subject, no
+negation. After adding a verb or frame, run `npm run validate` and read `npm run sentences -- --verb <inf>`.
 
 ## Status
 
 - [x] 1. Core: forms registry, conjugator, French helpers, tests
 - [x] 2. Verb data: 20 verbs, validator, cross-check (blind re-derivation + fr.wiktionary, 2026-11-22: no differences)
-- [ ] 3. Sentence layer: subjects, frames, complements, generator
+- [x] 3. Sentence layer: subjects, frames, complements, generator (one full review of every sentence, then fixes; the revised set was only partly re-read, so owner proofreading is still welcome)
 - [ ] 4. Practice screen
 - [ ] 5. Settings, progress, scheduler
 - [ ] 6. Offline: service worker, manifest
@@ -48,5 +64,12 @@ tools/       validate-data.mjs
 | 2026-11-22 | Where participle gender or number is unknown (je, tu, nous, vous, on), all agreeing variants are accepted | The sentence gives no way to decide |
 | 2026-11-22 | A person is treated as missing for a verb when no simple tense has a form for it (drives `null` for falloir's compound forms) | Derived from the data, no special-casing of `impersonal` in code |
 | 2026-11-22 | `passer` defaults to auxiliary avoir; sentences can override per complement (`opts.aux`) | Its auxiliary depends on meaning |
+| 2026-11-22 | Sentence vocabulary and structures are CEFR B1 | Owner's choice |
+| 2026-11-22 | Complements live in `complements.js` keyed by infinitive, not inside `verbs.js` | Keeps the verified conjugation tables separate from editorial content |
+| 2026-11-22 | Bad combinations are excluded explicitly (`notVerbs`, `notPersons`, `notSubjects`, `notForms`, `notFrames`), with named groups for readability | Simple and reviewable at 20 verbs. If the verb list grows a lot, consider tags (frame `needs`, complement `avoids`) so a new verb doesn't require touching frames |
+| 2026-11-22 | Passé composé frames with only a past time point (hier soir…) exclude stative and modal verbs; those verbs get bounded-duration frames (« pendant deux ans ») | With a bare time point the imparfait is equally correct for être, pouvoir, vouloir, devoir, falloir |
+| 2026-11-22 | Futur frames avoid markers where the présent is as natural (« l'année prochaine », « plus tard ») | The learner must not be marked wrong for a correct alternative |
+| 2026-11-22 | Subjonctif passé frames always carry a past marker after the complement; subjonctif présent frames with a non-volitional trigger carry a present or future marker | Keeps the two subjunctive forms from being interchangeable |
+| 2026-11-22 | Invariant: every verb × form keeps at least 3 usable frames and 3 usable complements (validator warns below 3 frames) | Enough variety without forcing unnatural sentences |
 | 2026-11-22 | UI language is French | Owner's choice |
 | 2026-11-22 | Hosting: GitHub Pages | Static HTTPS is all a service worker needs |

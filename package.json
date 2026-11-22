@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test \"tests/**/*.test.js\"",
-    "validate": "node tools/validate-data.mjs"
+    "validate": "node tools/validate-data.mjs && node tools/validate-sentences.mjs",
+    "sentences": "node tools/dump-sentences.mjs"
   }
 }
