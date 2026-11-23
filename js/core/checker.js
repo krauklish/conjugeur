@@ -62,7 +62,7 @@ export function createChecker({ verbs }) {
     const typed = normalizeAnswer(typedRaw ?? '');
     if (!typed) return null;
     const answers = exercise.answers.map(normalizeAnswer);
-    const result = (verdict, note = null) => ({ verdict, typed, expected: exercise.answers[0], note });
+    const result = (verdict, note = null, expected = exercise.answers[0]) => ({ verdict, typed, expected, note });
     const diags = diagnoses(exercise); // also validates the verb
     if (answers.includes(typed)) return result('correct');
 
@@ -73,7 +73,9 @@ export function createChecker({ verbs }) {
     const exact = find((s) => s);
     if (exact) return result('wrong', exact);
     const bare = stripDiacritics(typed);
-    if (answers.some((a) => stripDiacritics(a) === bare)) return result('accent');
+    // For an accent slip, `expected` is the accepted answer the learner meant.
+    const meant = answers.findIndex((a) => stripDiacritics(a) === bare);
+    if (meant >= 0) return result('accent', null, exercise.answers[meant]);
     return result('wrong', find(stripDiacritics));
   }
 

@@ -32,6 +32,8 @@ for (const v of VERBS) {
   seen.add(inf);
   if (!['être', 'avoir'].includes(v.aux)) err(inf, `bad aux "${v.aux}"`);
   if (typeof v.pp !== 'string' || !v.pp) err(inf, 'empty pp');
+  if (![1, 3].includes(v.group)) err(inf, `bad group "${v.group}" (1 or 3)`);
+  if (v.group === 1 && !inf.endsWith('er')) err(inf, 'group 1 must end in -er');
   const keys = Object.keys(v.simple ?? {}).sort();
   const want = [...SIMPLE_FORM_IDS].sort();
   if (keys.join() !== want.join()) { err(inf, `simple keys [${keys}] != [${want}]`); continue; }

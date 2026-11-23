@@ -9,7 +9,7 @@ import { createGenerator } from './core/generator.js';
 import { createChecker } from './core/checker.js';
 import { createStore } from './core/store.js';
 import { el, nextFrame } from './ui/dom.js';
-import { S, score } from './ui/strings.js';
+import { S } from './ui/strings.js';
 import { mountPractice } from './ui/practice.js';
 import { mountSettings } from './ui/settings.js';
 import { mountProgress } from './ui/progress.js';
@@ -27,12 +27,11 @@ const ctx = {
   store,
   allVerbs: ALL_VERBS,
   allForms: FORMS,
+  verbGroups: new Map(VERBS.map((v) => [v.inf, v.group])),
   stats: store.loadStats(),
   generator: createGenerator({ verbs: VERBS, subjects: SUBJECTS, frames: FRAMES, complements: COMPLEMENTS }),
   checker: createChecker({ verbs: VERBS }),
   selection: store.loadSelection(ALL_VERBS, ALL_FORM_IDS),
-  score: { right: 0, total: 0 },
-  onScore: () => {},
 };
 
 // View registry: { id, label, mount(container, ctx) -> { onShow? }? , onShow? }.
@@ -45,8 +44,6 @@ const VIEWS = [
 
 function start(root) {
   const nav = el('nav', { class: 't-caption', 'aria-label': S.navLabel });
-  const scoreEl = el('span', { class: 'score', 'aria-label': S.scoreLabel }, score(0, 0));
-  ctx.onScore = () => { scoreEl.textContent = score(ctx.score.right, ctx.score.total); };
 
   const views = new Map();
   for (const v of VIEWS) {
@@ -56,7 +53,6 @@ function start(root) {
     const container = el('main', { class: 'view', id: `view-${v.id}`, hidden: true });
     views.set(v.id, { def: v, button, container, api: null });
   }
-  nav.append(scoreEl);
   root.append(nav, ...[...views.values()].map((v) => v.container));
 
   let current = null;
@@ -102,4 +98,21 @@ function start(root) {
   registerServiceWorker(nav);
 }
 
-start(document.getElementById('app'));
+// Sizes the app to the visible area, so the practice view's button sits above
+// the on-screen keyboard. Android Chrome also resizes via interactive-widget in
+// the viewport meta; iOS only reports it through visualViewport.
+function followViewport(root) {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const sync = () => {
+    root.style.setProperty('--app-h', `${vv.height}px`);
+    // iOS pans the page when the keyboard opens; the practice view fits, so pin it.
+    if (!document.getElementById('view-practice')?.hidden) window.scrollTo(0, 0);
+  };
+  vv.addEventListener('resize', sync);
+  sync();
+}
+
+const root = document.getElementById('app');
+followViewport(root);
+start(root);

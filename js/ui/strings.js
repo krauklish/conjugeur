@@ -4,14 +4,11 @@
 import { formById } from '../data/forms.js';
 
 const NB = ' ';
-export const q = (s) => `«${NB}${s}${NB}»`;
 
 export const S = {
   navLabel: 'Navigation',
-  scoreLabel: 'Réponses justes sur total',
   views: { practice: 'Exercice', settings: 'Réglages', progress: 'Progrès' },
   answerLabel: 'Votre réponse',
-  hintLabel: 'Infinitif',
   check: 'Vérifier',
   next: 'Continuer',
   empty: 'Choisissez au moins un verbe et une forme dans les réglages.',
@@ -38,21 +35,10 @@ export const S = {
     text: 'Nouvelle version disponible',
     action: 'Mettre à jour',
   },
-  verdicts: {
-    correct: 'Correct',
-    accent: `Presque${NB}: attention aux accents`,
-    wrong: 'Incorrect',
-  },
+  irregular: 'irrégulier',
+  group1: '1er groupe',
 };
 
-const FORM_NAMES = {
-  'ind.present': 'le présent de l’indicatif',
-  'ind.pc': 'le passé composé',
-  'ind.imparfait': 'l’imparfait',
-  'ind.futur': 'le futur simple',
-  'subj.present': 'le subjonctif présent',
-  'subj.passe': 'le subjonctif passé',
-};
 
 const SHORT = {
   'ind.present': 'Prés.',
@@ -77,21 +63,26 @@ export function summaryLine(total, rate) {
   return `${total}${NB}réponse${total > 1 ? 's' : ''}, ${pct(rate ?? 0)} juste${total > 1 ? 's' : ''}.`;
 }
 
-const PRONOUNS = ['je', 'tu', 'il/elle/on', 'nous', 'vous', 'ils/elles'];
+// The indicatif is the default mood and is never named: « Passé composé »,
+// but « Subjonctif · Présent ».
+const isIndicatif = (f) => f.mood === 'Indicatif';
 
-export function score(right, total) {
-  return `${right}${NB}/${NB}${total}`;
-}
-
+// Form name in running text: « passé composé », « subjonctif présent ».
 export function formName(formId) {
-  if (FORM_NAMES[formId]) return FORM_NAMES[formId];
   const f = formById(formId);
-  return f ? `${f.mood.toLowerCase()} ${f.label.toLowerCase()}` : formId;
+  if (!f) return formId;
+  return (isIndicatif(f) ? f.label : `${f.mood} ${f.label}`).toLowerCase();
 }
 
 export function formTitle(formId) {
   const f = formById(formId);
-  return f ? `${f.mood} · ${f.label}` : formId;
+  if (!f) return formId;
+  return isIndicatif(f) ? f.label : `${f.mood} · ${f.label}`;
+}
+
+// Hint under the sentence: « aller · irrégulier », « parler · 1er groupe ».
+export function verbHint(infinitive, group) {
+  return `${infinitive} · ${group === 1 ? S.group1 : S.irregular}`;
 }
 
 // Ends a phrase with a period unless it already ends with terminal punctuation.
@@ -100,29 +91,15 @@ function sentenceEnd(s) {
   return /[.!?…]$/.test(t) ? t : `${t}.`;
 }
 
-export function noteLine(note, typed) {
-  if (!note) return null;
-  switch (note.kind) {
-    case 'form': return `${q(typed)} est ${formName(note.formId)}.`;
-    case 'person': return `${q(typed)} est la forme pour ${q(PRONOUNS[note.person] ?? '?')}.`;
-    case 'agreement': return 'Attention à l’accord du participe passé.';
-    case 'auxiliary': return `Ici, le verbe se conjugue avec ${q(note.expected)}.`;
-    default: return null;
-  }
-}
-
 // French punctuation takes a non-breaking space: before : ; ? ! » and after «.
 // Applied at render time so content files can be written with plain spaces.
 export function frenchSpacing(text) {
   return text.replace(/ ([:;?!»])/g, ' $1').replace(/« /g, '« ');
 }
 
-// Explanation lines shown under the verdict, in order.
-export function explanation(exercise, result) {
-  const lines = [];
-  const n = noteLine(result.note, result.typed);
-  if (n) lines.push(n);
-  const cue = exercise.cue ? ` ${frenchSpacing(sentenceEnd(exercise.cue))}` : '';
-  lines.push(`${formTitle(exercise.formId)}.${cue}`);
-  return lines;
+// The cue, without its trailing « → form », which the first line already names.
+export function cueLine(cue) {
+  if (!cue) return null;
+  const i = cue.lastIndexOf(' → ');
+  return frenchSpacing(sentenceEnd(i < 0 ? cue : cue.slice(0, i))).replaceAll("'", '’');
 }

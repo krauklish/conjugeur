@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const SW_PATH = join(ROOT, 'sw.js');
 const ROOT_FILES = ['index.html', 'manifest.webmanifest'];
-const DIRS = ['css', 'js', 'icons'];
+const DIRS = ['css', 'fonts', 'js', 'icons'];
 const START = '// <generated>';
 const END = '// </generated>';
 

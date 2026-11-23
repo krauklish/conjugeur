@@ -1,11 +1,12 @@
 // Conjugation data for the 20 most frequent French verbs.
 // Person index: 0 je, 1 tu, 2 il/elle/on, 3 nous, 4 vous, 5 ils/elles.
+// group: 1 = regular -er verb, 3 = irregular (shown as « irrégulier »).
 // Only simple tenses are stored; compound tenses derive from `aux` + `pp`.
 // Validate with `npm run validate` (add `-- --list` to proofread).
 
 export const VERBS = [
   {
-    inf: 'être', aux: 'avoir', pp: 'été',
+    inf: 'être', group: 3, aux: 'avoir', pp: 'été',
     simple: {
       'ind.present':   ['suis',    'es',      'est',     'sommes',   'êtes',    'sont'],
       'ind.imparfait': ['étais',   'étais',   'était',   'étions',   'étiez',   'étaient'],
@@ -14,7 +15,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'avoir', aux: 'avoir', pp: 'eu',
+    inf: 'avoir', group: 3, aux: 'avoir', pp: 'eu',
     simple: {
       'ind.present':   ['ai',      'as',      'a',       'avons',    'avez',    'ont'],
       'ind.imparfait': ['avais',   'avais',   'avait',   'avions',   'aviez',   'avaient'],
@@ -23,7 +24,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'faire', aux: 'avoir', pp: 'fait',
+    inf: 'faire', group: 3, aux: 'avoir', pp: 'fait',
     simple: {
       'ind.present':   ['fais',    'fais',    'fait',    'faisons',  'faites',  'font'],
       'ind.imparfait': ['faisais', 'faisais', 'faisait', 'faisions', 'faisiez', 'faisaient'],
@@ -32,7 +33,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'dire', aux: 'avoir', pp: 'dit',
+    inf: 'dire', group: 3, aux: 'avoir', pp: 'dit',
     simple: {
       'ind.present':   ['dis',     'dis',     'dit',     'disons',   'dites',   'disent'],
       'ind.imparfait': ['disais',  'disais',  'disait',  'disions',  'disiez',  'disaient'],
@@ -41,7 +42,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'pouvoir', aux: 'avoir', pp: 'pu',
+    inf: 'pouvoir', group: 3, aux: 'avoir', pp: 'pu',
     simple: {
       'ind.present':   ['peux',    'peux',    'peut',    'pouvons',  'pouvez',  'peuvent'],
       'ind.imparfait': ['pouvais', 'pouvais', 'pouvait', 'pouvions', 'pouviez', 'pouvaient'],
@@ -50,7 +51,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'aller', aux: 'être', pp: 'allé',
+    inf: 'aller', group: 3, aux: 'être', pp: 'allé',
     simple: {
       'ind.present':   ['vais',    'vas',     'va',      'allons',   'allez',   'vont'],
       'ind.imparfait': ['allais',  'allais',  'allait',  'allions',  'alliez',  'allaient'],
@@ -59,7 +60,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'voir', aux: 'avoir', pp: 'vu',
+    inf: 'voir', group: 3, aux: 'avoir', pp: 'vu',
     simple: {
       'ind.present':   ['vois',    'vois',    'voit',    'voyons',   'voyez',   'voient'],
       'ind.imparfait': ['voyais',  'voyais',  'voyait',  'voyions',  'voyiez',  'voyaient'],
@@ -68,7 +69,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'savoir', aux: 'avoir', pp: 'su',
+    inf: 'savoir', group: 3, aux: 'avoir', pp: 'su',
     simple: {
       'ind.present':   ['sais',    'sais',    'sait',    'savons',   'savez',   'savent'],
       'ind.imparfait': ['savais',  'savais',  'savait',  'savions',  'saviez',  'savaient'],
@@ -77,7 +78,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'vouloir', aux: 'avoir', pp: 'voulu',
+    inf: 'vouloir', group: 3, aux: 'avoir', pp: 'voulu',
     simple: {
       'ind.present':   ['veux',    'veux',    'veut',    'voulons',  'voulez',  'veulent'],
       'ind.imparfait': ['voulais', 'voulais', 'voulait', 'voulions', 'vouliez', 'voulaient'],
@@ -86,7 +87,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'venir', aux: 'être', pp: 'venu',
+    inf: 'venir', group: 3, aux: 'être', pp: 'venu',
     simple: {
       'ind.present':   ['viens',   'viens',   'vient',   'venons',   'venez',   'viennent'],
       'ind.imparfait': ['venais',  'venais',  'venait',  'venions',  'veniez',  'venaient'],
@@ -95,7 +96,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'devoir', aux: 'avoir', pp: 'dû',
+    inf: 'devoir', group: 3, aux: 'avoir', pp: 'dû',
     simple: {
       'ind.present':   ['dois',    'dois',    'doit',    'devons',   'devez',   'doivent'],
       'ind.imparfait': ['devais',  'devais',  'devait',  'devions',  'deviez',  'devaient'],
@@ -104,7 +105,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'prendre', aux: 'avoir', pp: 'pris',
+    inf: 'prendre', group: 3, aux: 'avoir', pp: 'pris',
     simple: {
       'ind.present':   ['prends',  'prends',  'prend',   'prenons',  'prenez',  'prennent'],
       'ind.imparfait': ['prenais', 'prenais', 'prenait', 'prenions', 'preniez', 'prenaient'],
@@ -113,7 +114,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'trouver', aux: 'avoir', pp: 'trouvé',
+    inf: 'trouver', group: 1, aux: 'avoir', pp: 'trouvé',
     simple: {
       'ind.present':   ['trouve',  'trouves', 'trouve',  'trouvons', 'trouvez', 'trouvent'],
       'ind.imparfait': ['trouvais','trouvais','trouvait','trouvions','trouviez','trouvaient'],
@@ -122,7 +123,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'donner', aux: 'avoir', pp: 'donné',
+    inf: 'donner', group: 1, aux: 'avoir', pp: 'donné',
     simple: {
       'ind.present':   ['donne',   'donnes',  'donne',   'donnons',  'donnez',  'donnent'],
       'ind.imparfait': ['donnais', 'donnais', 'donnait', 'donnions', 'donniez', 'donnaient'],
@@ -131,7 +132,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'falloir', aux: 'avoir', pp: 'fallu', impersonal: true,
+    inf: 'falloir', group: 3, aux: 'avoir', pp: 'fallu', impersonal: true,
     simple: {
       'ind.present':   [null, null, 'faut',    null, null, null],
       'ind.imparfait': [null, null, 'fallait', null, null, null],
@@ -140,7 +141,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'parler', aux: 'avoir', pp: 'parlé',
+    inf: 'parler', group: 1, aux: 'avoir', pp: 'parlé',
     simple: {
       'ind.present':   ['parle',   'parles',  'parle',   'parlons',  'parlez',  'parlent'],
       'ind.imparfait': ['parlais', 'parlais', 'parlait', 'parlions', 'parliez', 'parlaient'],
@@ -149,7 +150,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'mettre', aux: 'avoir', pp: 'mis',
+    inf: 'mettre', group: 3, aux: 'avoir', pp: 'mis',
     simple: {
       'ind.present':   ['mets',    'mets',    'met',     'mettons',  'mettez',  'mettent'],
       'ind.imparfait': ['mettais', 'mettais', 'mettait', 'mettions', 'mettiez', 'mettaient'],
@@ -159,7 +160,7 @@ export const VERBS = [
   },
   {
     // Default auxiliary avoir (transitive); the app overrides to être per sentence.
-    inf: 'passer', aux: 'avoir', pp: 'passé',
+    inf: 'passer', group: 1, aux: 'avoir', pp: 'passé',
     simple: {
       'ind.present':   ['passe',   'passes',  'passe',   'passons',  'passez',  'passent'],
       'ind.imparfait': ['passais', 'passais', 'passait', 'passions', 'passiez', 'passaient'],
@@ -168,7 +169,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'croire', aux: 'avoir', pp: 'cru',
+    inf: 'croire', group: 3, aux: 'avoir', pp: 'cru',
     simple: {
       'ind.present':   ['crois',   'crois',   'croit',   'croyons',  'croyez',  'croient'],
       'ind.imparfait': ['croyais', 'croyais', 'croyait', 'croyions', 'croyiez', 'croyaient'],
@@ -177,7 +178,7 @@ export const VERBS = [
     },
   },
   {
-    inf: 'aimer', aux: 'avoir', pp: 'aimé',
+    inf: 'aimer', group: 1, aux: 'avoir', pp: 'aimé',
     simple: {
       'ind.present':   ['aime',    'aimes',   'aime',    'aimons',   'aimez',   'aiment'],
       'ind.imparfait': ['aimais',  'aimais',  'aimait',  'aimions',  'aimiez',  'aimaient'],

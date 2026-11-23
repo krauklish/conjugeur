@@ -93,3 +93,8 @@ test('unrelated, subject typed, unknown verb', () => {
   assert.equal(c.check(e, 'je vais').note, null);
   assert.throws(() => c.check(ex('nope', 'ind.present', 0, ['x']), 'x'), /Unknown verb/);
 });
+
+test('accent slip reports the accepted answer the learner meant', () => {
+  const e = ex('aller', 'ind.pc', 4, ['êtes allé', 'êtes allée', 'êtes allés', 'êtes allées']);
+  assert.equal(c.check(e, 'etes allees').expected, 'êtes allées');
+});

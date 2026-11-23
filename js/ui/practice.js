@@ -1,7 +1,7 @@
 // Practice view: one sentence with an inline blank, check, feedback, next.
 
 import { el, nextFrame } from './dom.js';
-import { S, explanation } from './strings.js';
+import { S, formName, cueLine, verbHint } from './strings.js';
 import { pick, record } from '../core/scheduler.js';
 
 const SWAP_MS = 180;
@@ -37,15 +37,12 @@ export function mountPractice(container, ctx) {
   });
   const sentence = el('p', { class: 'sentence t-display' },
     before, el('span', { class: 'blank-wrap' }, mirror, input), after);
-  const hint = el('p', { class: 'hint t-caption', 'aria-label': S.hintLabel });
-  const verdict = el('p', { class: 'verdict t-caption' });
-  const correct = el('p', { class: 'answer t-display', lang: 'fr' });
-  const why = el('div', { class: 'why' });
-  const feedback = el('div', { class: 'feedback', 'aria-live': 'polite' },
-    el('div', {}, verdict, correct, why));
-  const action = el('button', { class: 'action', type: 'submit' }, S.check);
-  const form = el('form', { autocomplete: 'off', novalidate: true }, sentence, hint, feedback, action);
-  const empty = el('p', { class: 'empty', hidden: true }, S.empty);
+  // Verb hint while answering; once checked, the form and why it is right.
+  const caption = el('div', { class: 'caption t-caption', lang: 'fr', 'aria-live': 'polite' });
+  const action = el('button', { class: 'button', type: 'submit' }, S.check);
+  const form = el('form', { class: 'practice', autocomplete: 'off', novalidate: true },
+    el('div', { class: 'stage' }, sentence, caption), action);
+  const empty = el('p', { class: 'empty-state t-caption', hidden: true }, S.empty);
   container.append(form, empty);
 
   const available = new Map();
@@ -61,19 +58,19 @@ export function mountPractice(container, ctx) {
   function fit() {
     mirror.textContent = input.value;
     input.style.width = input.value ? `calc(${mirror.offsetWidth}px + 0.5ch)` : '';
+    input.classList.toggle('is-filled', !!input.value);
   }
+
+  const line = (...children) => el('p', {}, ...children);
 
   function paint(ex) {
     // Display uses the typographic apostrophe; the data keeps the plain one.
     before.textContent = ex.before.replaceAll("'", '’');
     after.textContent = ex.after.replaceAll("'", '’');
-    hint.textContent = ex.infinitive;
+    caption.replaceChildren(line(verbHint(ex.infinitive, ctx.verbGroups.get(ex.infinitive))));
     input.value = '';
     fit();
-    form.className = '';
-    verdict.textContent = '';
-    correct.textContent = '';
-    why.replaceChildren();
+    form.className = 'practice';
     action.textContent = S.check;
     phase = 'answering';
   }
@@ -105,21 +102,21 @@ export function mountPractice(container, ctx) {
   function check() {
     const r = ctx.checker.check(current, input.value);
     if (!r) { shake(); return; }
-    const cls = { correct: 'is-correct', accent: 'is-almost', wrong: 'is-wrong' }[r.verdict];
-    verdict.textContent = S.verdicts[r.verdict];
-    correct.textContent = r.verdict === 'correct' ? '' : r.expected;
-    why.replaceChildren(...explanation(current, r).map((t) => el('p', {}, t)));
-    form.className = `is-checked ${cls}`;
-    if (r.verdict === 'wrong') shake();
+    // An accent-only slip counts as right: the accents are filled in.
+    const right = r.verdict !== 'wrong';
+    if (r.verdict === 'accent') { input.value = r.expected; fit(); }
+    const cue = cueLine(current.cue);
+    const name = formName(current.formId);
+    caption.replaceChildren(
+      right ? line(name)
+        : line(el('span', { class: 'answer' }, r.expected), ` · ${name}`),
+      ...(cue ? [line(cue)] : []));
+    form.className = `practice is-checked ${right ? 'is-correct' : 'is-wrong'}`;
+    if (!right) shake();
     action.textContent = S.next;
     phase = 'checked';
-    // An accent-only slip counts as not right, for the score and the stats.
-    const right = r.verdict === 'correct';
-    ctx.score.total += 1;
-    if (right) ctx.score.right += 1;
     ctx.stats = record(ctx.stats, current.ref.verb, current.formId, right);
     ctx.store.saveStats(ctx.stats);
-    ctx.onScore();
   }
 
   form.addEventListener('submit', (e) => { // Enter in the field, or the button
