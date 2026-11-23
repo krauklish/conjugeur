@@ -72,7 +72,7 @@ export function mountPractice(container, ctx) {
     input.style.width = `${Math.min(Math.max(base, typed) + caret, line)}px`;
     input.classList.toggle('is-filled', !!input.value);
   }
-  // The first measure can run on the fallback font; redo it once Inter is in.
+  // The first measure can run on the fallback font; redo it once Chivo is in.
   document.fonts?.ready.then(fit);
 
   const line = (...children) => el('p', {}, ...children);

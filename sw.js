@@ -3,12 +3,12 @@
 // do not edit them by hand. tests/sw.test.js fails when they are stale.
 
 // <generated>
-const VERSION = '0e232f1fd40a';
+const VERSION = '130acfa6d54b';
 const PRECACHE = [
   './',
   'css/app.css',
   'fonts/OFL.txt',
-  'fonts/inter-latin-wght.woff2',
+  'fonts/chivo-latin-wght.woff2',
   'icons/apple-touch-icon.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
