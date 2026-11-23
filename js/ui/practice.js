@@ -55,11 +55,25 @@ export function mountPractice(container, ctx) {
   let current = null;
   let phase = 'answering'; // 'answering' | 'checked'
 
+  // Width of a string in the sentence's type.
+  function textWidth(text) {
+    mirror.textContent = text;
+    return mirror.offsetWidth;
+  }
+
+  // The empty blank is as wide as the expected answer, and keeps that width as
+  // its minimum while the learner types; longer input widens it, up to the
+  // width of the line.
   function fit() {
-    mirror.textContent = input.value;
-    input.style.width = input.value ? `calc(${mirror.offsetWidth}px + 0.5ch)` : '';
+    const caret = parseFloat(getComputedStyle(input).fontSize) / 4;
+    const base = current ? textWidth(current.answers[0]) : 0;
+    const typed = input.value ? textWidth(input.value) : 0;
+    const line = sentence.clientWidth || Infinity; // 0 while the view is hidden
+    input.style.width = `${Math.min(Math.max(base, typed) + caret, line)}px`;
     input.classList.toggle('is-filled', !!input.value);
   }
+  // The first measure can run on the fallback font; redo it once Inter is in.
+  document.fonts?.ready.then(fit);
 
   const line = (...children) => el('p', {}, ...children);
 

@@ -15,7 +15,7 @@
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 * { box-sizing: border-box; margin: 0; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body {
   background: var(--paper);
   color: var(--ink);
@@ -75,7 +75,7 @@ nav button[aria-current="page"] { color: var(--accent); }
 .sentence.is-in { opacity: 0; transform: translateY(10px); transition: none; }
 .blank-wrap { display: inline-block; position: relative; vertical-align: baseline; }
 .blank {
-  width: 2.8em; min-width: 1ch; max-width: 100%;
+  width: 2.8em; /* until practice.js sizes it to the answer */
   padding: 0; border: 0; border-bottom: 2px solid var(--ink); border-radius: 0;
   background: transparent; outline: none; caret-color: var(--accent);
   font-size: inherit; line-height: inherit; font-weight: inherit; text-align: center;
