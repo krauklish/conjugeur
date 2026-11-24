@@ -24,7 +24,7 @@ export function mountSettings(container, ctx) {
   const allFormIds = ctx.allForms.map((f) => f.id);
   const sel = ctx.selection;
 
-  const hint = el('p', { class: 'empty t-caption' }, S.settings.emptyHint);
+  const hint = el('p', { class: 'empty' }, S.settings.emptyHint);
   const formsBox = el('div');
   const verbsBox = el('div', { class: 'chips' });
   const all = el('button', { type: 'button' }, S.settings.all);
@@ -34,12 +34,12 @@ export function mountSettings(container, ctx) {
     el('h1', { class: 't-display' }, S.settings.title),
     hint,
     el('section', {},
-      el('div', { class: 'row' }, el('span', { class: 't-caption' }, S.settings.forms)),
+      el('div', { class: 'row' }, el('span', { }, S.settings.forms)),
       formsBox),
     el('section', {},
       el('div', { class: 'row' },
-        el('span', { class: 't-caption' }, S.settings.verbs),
-        el('span', { class: 'links t-caption' }, all, none)),
+        el('span', { }, S.settings.verbs),
+        el('span', { class: 'links' }, all, none)),
       verbsBox),
   );
 
@@ -62,7 +62,7 @@ export function mountSettings(container, ctx) {
   function render() {
     const moods = [...new Set(ctx.allForms.map((f) => f.mood))];
     formsBox.replaceChildren(...moods.map((mood) => el('div', { class: 'group' },
-      el('span', { class: 't-caption' }, mood),
+      el('span', { }, mood),
       el('div', { class: 'chips' }, ...ctx.allForms.filter((f) => f.mood === mood)
         .map((f) => chip(f.label, sel.forms.includes(f.id), toggleForm(f.id)))))));
     verbsBox.replaceChildren(...allVerbs.map((v) => chip(v, sel.verbs.includes(v), toggleVerb(v))));

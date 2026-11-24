@@ -53,7 +53,7 @@ export function registerServiceWorker(nav) {
 
 function showNotice(nav, onConfirm) {
   const button = el('button', { type: 'button', class: 'link' }, S.update.action);
-  const box = el('div', { class: 'update t-caption', role: 'status' },
+  const box = el('div', { class: 'update', role: 'status' },
     el('div', {}, el('p', {}, el('span', {}, S.update.text), button)));
   // Must not take focus away from the answer field.
   button.addEventListener('pointerdown', (e) => e.preventDefault());

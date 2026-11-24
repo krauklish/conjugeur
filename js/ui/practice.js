@@ -1,7 +1,7 @@
 // Practice view: one sentence with an inline blank, check, feedback, next.
 
 import { el, nextFrame } from './dom.js';
-import { S, formName, cueLine, verbHint } from './strings.js';
+import { S, formName, cueParts, verbHint } from './strings.js';
 import { pick, record } from '../core/scheduler.js';
 
 const SWAP_MS = 180;
@@ -35,14 +35,16 @@ export function mountPractice(container, ctx) {
     autocomplete: 'off', autocorrect: 'off', autocapitalize: 'off', spellcheck: 'false',
     'aria-label': S.answerLabel,
   });
+  // On a wrong answer the correct one is shown in accent right after the typed text.
+  const expected = el('span', { class: 'expected', hidden: true });
   const sentence = el('p', { class: 'sentence t-display' },
-    before, el('span', { class: 'blank-wrap' }, mirror, input), after);
+    before, el('span', { class: 'blank-wrap' }, mirror, input, expected), after);
   // Verb hint while answering; once checked, the form and why it is right.
-  const caption = el('div', { class: 'caption t-caption', lang: 'fr', 'aria-live': 'polite' });
-  const action = el('button', { class: 'button', type: 'submit' }, S.check);
+  const caption = el('div', { class: 'caption', lang: 'fr', 'aria-live': 'polite' });
+  // No submit button: the field is the only input, so Enter submits the form.
   const form = el('form', { class: 'practice', autocomplete: 'off', novalidate: true },
-    el('div', { class: 'stage' }, sentence, caption), action);
-  const empty = el('p', { class: 'empty-state t-caption', hidden: true }, S.empty);
+    el('div', { class: 'stage' }, sentence, caption));
+  const empty = el('p', { class: 'empty-state', hidden: true }, S.empty);
   container.append(form, empty);
 
   const available = new Map();
@@ -66,7 +68,8 @@ export function mountPractice(container, ctx) {
   // width of the line.
   function fit() {
     const caret = parseFloat(getComputedStyle(input).fontSize) / 4;
-    const base = current ? textWidth(current.answers[0]) : 0;
+    // Once checked, the field holds only what was typed (or the accent-fixed answer).
+    const base = current && phase === 'answering' ? textWidth(current.answers[0]) : 0;
     const typed = input.value ? textWidth(input.value) : 0;
     const line = sentence.clientWidth || Infinity; // 0 while the view is hidden
     input.style.width = `${Math.min(Math.max(base, typed) + caret, line)}px`;
@@ -83,10 +86,11 @@ export function mountPractice(container, ctx) {
     after.textContent = ex.after.replaceAll("'", '’');
     caption.replaceChildren(line(verbHint(ex.infinitive, ctx.verbGroups.get(ex.infinitive))));
     input.value = '';
+    expected.hidden = true;
+    expected.textContent = '';
+    phase = 'answering';
     fit();
     form.className = 'practice';
-    action.textContent = S.check;
-    phase = 'answering';
   }
 
   function show(animate) {
@@ -118,22 +122,22 @@ export function mountPractice(container, ctx) {
     if (!r) { shake(); return; }
     // An accent-only slip counts as right: the accents are filled in.
     const right = r.verdict !== 'wrong';
-    if (r.verdict === 'accent') { input.value = r.expected; fit(); }
-    const cue = cueLine(current.cue);
+    phase = 'checked';
+    if (r.verdict === 'accent') { input.value = r.expected; }
+    // Wrong: the typed text is struck through, the correct answer follows in accent.
+    expected.textContent = right ? '' : r.expected;
+    expected.hidden = right;
+    fit();
+    const cue = cueParts(current.cue);
     const name = formName(current.formId);
-    caption.replaceChildren(
-      right ? line(name)
-        : line(el('span', { class: 'answer' }, r.expected), ` · ${name}`),
-      ...(cue ? [line(cue)] : []));
+    caption.replaceChildren(line(name), ...(cue ? [line(...cue.map((p) => (p.italic ? el('em', {}, p.text) : p.text)))] : []));
     form.className = `practice is-checked ${right ? 'is-correct' : 'is-wrong'}`;
     if (!right) shake();
-    action.textContent = S.next;
-    phase = 'checked';
     ctx.stats = record(ctx.stats, current.ref.verb, current.formId, right);
     ctx.store.saveStats(ctx.stats);
   }
 
-  form.addEventListener('submit', (e) => { // Enter in the field, or the button
+  form.addEventListener('submit', (e) => { // Enter in the field
     e.preventDefault();
     if (phase === 'answering') check(); else show(true);
     input.focus();
@@ -144,8 +148,6 @@ export function mountPractice(container, ctx) {
     // Lock the text once checked, but let Enter through: it submits the form.
     if (phase === 'checked' && e.inputType !== 'insertLineBreak') e.preventDefault();
   });
-  // The button must not take focus away from the field.
-  action.addEventListener('pointerdown', (e) => e.preventDefault());
 
   const inSelection = (ex) => ex
     && ctx.selection.verbs.includes(ex.infinitive) && ctx.selection.forms.includes(ex.formId);

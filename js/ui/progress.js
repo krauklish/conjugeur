@@ -7,15 +7,15 @@ import { summary, weakest } from '../core/scheduler.js';
 export function mountProgress(container, ctx) {
   const line = el('p');
   const weak = el('div');
-  const table = el('table', { class: 't-caption' });
-  const clear = el('button', { type: 'button', class: 'link t-caption' }, S.progress.clear);
+  const table = el('table', { });
+  const clear = el('button', { type: 'button', class: 'link' }, S.progress.clear);
 
   container.append(
     el('h1', { class: 't-display' }, S.progress.title),
     el('section', {}, line),
-    el('section', {}, el('div', { class: 'row' }, el('span', { class: 't-caption' }, S.progress.review)), weak),
+    el('section', {}, el('div', { class: 'row' }, el('span', { }, S.progress.review)), weak),
     el('section', {},
-      el('div', { class: 'row' }, el('span', { class: 't-caption' }, S.progress.table)),
+      el('div', { class: 'row' }, el('span', { }, S.progress.table)),
       el('div', { class: 'table-wrap' }, table)),
     el('section', {}, clear),
   );

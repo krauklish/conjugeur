@@ -9,8 +9,6 @@ export const S = {
   navLabel: 'Navigation',
   views: { practice: 'Exercice', settings: 'Réglages', progress: 'Progrès' },
   answerLabel: 'Votre réponse',
-  check: 'Vérifier',
-  next: 'Continuer',
   empty: 'Choisissez au moins un verbe et une forme dans les réglages.',
   settings: {
     title: 'Réglages',
@@ -97,9 +95,14 @@ export function frenchSpacing(text) {
   return text.replace(/ ([:;?!»])/g, ' $1').replace(/« /g, '« ');
 }
 
-// The cue, without its trailing « → form », which the first line already names.
-export function cueLine(cue) {
+// The cue as parts, without its trailing « → form », which the first line already
+// names. The quoted example « En ce moment » comes back without quotes, italic.
+export function cueParts(cue) {
   if (!cue) return null;
   const i = cue.lastIndexOf(' → ');
-  return frenchSpacing(sentenceEnd(i < 0 ? cue : cue.slice(0, i))).replaceAll("'", '’');
+  const text = frenchSpacing(sentenceEnd(i < 0 ? cue : cue.slice(0, i))).replaceAll("'", '’');
+  // split with a capture group: odd entries are the quoted parts
+  return text.split(/«\s*([^»]*?)\s*»/)
+    .map((part, n) => ({ text: part, italic: n % 2 === 1 }))
+    .filter((p) => p.text);
 }

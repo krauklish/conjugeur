@@ -3,7 +3,7 @@
 // do not edit them by hand. tests/sw.test.js fails when they are stale.
 
 // <generated>
-const VERSION = '130acfa6d54b';
+const VERSION = '2aae73b9a0ea';
 const PRECACHE = [
   './',
   'css/app.css',

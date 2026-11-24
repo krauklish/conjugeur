@@ -43,7 +43,8 @@ const VIEWS = [
 ];
 
 function start(root) {
-  const nav = el('nav', { class: 't-caption', 'aria-label': S.navLabel });
+  // Hidden for now: the views are still mounted and reachable in code.
+  const nav = el('nav', { 'aria-label': S.navLabel, hidden: true });
 
   const views = new Map();
   for (const v of VIEWS) {
