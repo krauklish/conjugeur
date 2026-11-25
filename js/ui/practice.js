@@ -149,6 +149,36 @@ export function mountPractice(container, ctx) {
     if (phase === 'checked' && e.inputType !== 'insertLineBreak') e.preventDefault();
   });
 
+  // Tapping anywhere on the sentence focuses the blank (on iOS this is what
+  // raises the keyboard). Keep focus on mousedown so the keyboard doesn't blink.
+  sentence.addEventListener('mousedown', (e) => { if (e.target !== input) e.preventDefault(); });
+  sentence.addEventListener('click', () => { if (document.activeElement !== input) input.focus(); });
+
+  // Swipe up (touch only) loads the next exercise, answered or not.
+  const SWIPE_MIN = 60;
+  let swipe = null;
+  const active = () => !container.hidden && !form.hidden;
+  document.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    swipe = e.touches.length === 1 && active() ? { x: t.clientX, y: t.clientY } : null;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!swipe) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipe.x;
+    const dy = t.clientY - swipe.y;
+    swipe = null;
+    if (dy < -SWIPE_MIN && Math.abs(dy) > Math.abs(dx) * 1.5) show(true);
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => { swipe = null; }, { passive: true });
+
+  // Browsers may ignore the first focus() before the page is loaded or touched
+  // (iOS needs a gesture to raise the keyboard): retry on load and first tap.
+  const refocus = () => { if (active() && document.activeElement !== input) input.focus(); };
+  window.addEventListener('load', refocus, { once: true });
+  window.addEventListener('pageshow', refocus);
+  document.addEventListener('touchend', refocus, { once: true, passive: true });
+
   const inSelection = (ex) => ex
     && ctx.selection.verbs.includes(ex.infinitive) && ctx.selection.forms.includes(ex.formId);
 
